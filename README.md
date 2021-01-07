@@ -17,4 +17,4 @@ No designing and no other screen. If I feel to add them, I will do them.
 
 
 
-(Next project would be 3D or data science. Maybe data science -- 3D seemed excited but not as much as I expected... sorry, for my friend who helped me a lot for 3D game development.)
+(Next project would be 3D, 2D srpg, or data science, perhaps online 2D game again... Maybe data science -- 3D seemed excited but not as much as I expected... sorry, for my friend who helped me a lot for 3D game development.)
