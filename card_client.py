@@ -32,6 +32,9 @@ class Cards:
         text = font.render(str(self.num), 1, black)
         win.blit(text, ((self.x + round(self.width/2)-round(text.get_width()/2)), (self.y + round(self.height/2) - round(text.get_height()/2))))
 
+    def draw2(self, win):
+        pygame.draw.rect(win, white, self.coord)
+
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
@@ -45,6 +48,10 @@ class Cards:
 startX, interval = 100, 25
 cards = [Cards('1', startX, 500, 0), Cards('2', startX + interval + 80, 500, 1), Cards('3', startX + 160 + interval*2, 500, 2), Cards('4', startX + 240 + interval*3, 500, 3), Cards('5', startX + 320 + interval*4, 500, 4)]
 erased = []
+cards2 = [Cards(None, startX + 320 + interval*4, 0, 1), Cards(None, startX + 240 + interval*3, 0, 2), Cards(None, startX + 160 + interval*2, 0, 3), Cards(None, startX + 80 + interval, 0, 4), Cards(None, startX + interval*0, 0, 5)]
+erased2 = []
+cardsFor2 = [Cards(None, startX + 320 + interval*4, 0, 1), Cards(None, startX + 240 + interval*3, 0, 2), Cards(None, startX + 160 + interval*2, 0, 3), Cards(None, startX + 80 + interval, 0, 4), Cards(None, startX + interval*0, 0, 5)]
+erasedFor2 = []
 
 def CenteredText(txt):
     font = pygame.font.SysFont(None, 50)
@@ -82,12 +89,18 @@ def updateWindow(win, game, p):
         #win.blit(text, (w/2 - text.get_width()/2, h/2 - text.get_height()/2))
     for card in cards:
         card.draw(win)
+    if p == 0:
+        for card in cards2:
+            card.draw2(win)
+    if p == 1:
+        for a in cardsFor2:
+            a.draw2(win)
         #print(card)
     win.blit(ctext, (w/2 - ctext.get_width()/2, h/2 - ctext.get_height()/2))
     pygame.display.update()
 
 def main():
-    global ctext, cards, erased
+    global ctext, cards, erased, cards2, erased2, cardsFor2, erasedFor2
     run = True
     n = Network()
     clock = pygame.time.Clock()
@@ -146,8 +159,27 @@ def main():
             #print('zeroed')
 
         if game.bothReady():
+            if player == 0:
+                for e in cards2:
+                    number += 1
+                    print(e.count,' and ', game.get_card(1))
+                    if int(e.count) == int(game.get_card(1)):
+                        erased2.append(cards2[number - 1])
+                        del cards2[number-1]
+                        print('number: ', number)
+                        updateWindow(win, game, player)
+            if player == 1:
+                for e in cardsFor2:
+                    number += 1
+                    print(e.count,' and ', game.get_card(0))
+                    if int(e.count) == int(game.get_card(0)):
+                        erasedFor2.append(cardsFor2[number-1])
+                        del cardsFor2[number-1]
+                        updateWindow(win, game, player)
+            number = 0
             updateWindow(win, game, player)
             pygame.time.delay(1000)
+            #print(cards2)
             try:
                 game = n.send('reset')
             except:
@@ -157,30 +189,35 @@ def main():
 
             font = pygame.font.SysFont(None, 50)
 
+
             if (game.winner() == 1 and player == 1) or (game.winner() == 0 and player == 0):
                 ctext = font.render('You won!', 1, white)
-                print(game.winner())
+                #print(game.winner())
                 if (game.winner() == 1 and player == 1):
                     winCount2 += 1
-                    print('won 2')
+                    #print('won 2')
                 elif (game.winner() == 0 and player == 0):
                     winCount1 += 1
-                    print('won 1')
+                    #print('won 1')
             elif game.winner() == -1:
                 ctext = font.render('Tie', 1, white)
             else:
                 ctext = font.render('You Lost...', 1, white)
                 if (game.winner() == 1 and player == 0):
                     winCount2 += 1
-                    print('won 1')
+                    #print('won 1')
                 elif (game.winner() == 0 and player == 1):
                     winCount1 += 1
-                    print('won 2')
-            print(winCount1, ':', winCount2)
+                    #print('won 2')
+            #print(winCount1, ':', winCount2)
 
             if len(cards) == 0:
                 cards = erased
                 erased = []
+                cards2 = erased2
+                erased2 = []
+                cardsFor2 = erasedFor2
+                erasedFor2 = []
                 if (winCount1 > winCount2 and player ==0) or (winCount1 < winCount2 and player == 1):#game.Judge(player):#(player == 0 and game.winCount1 > game.winCount2) or (player == 1 and game.winCount1 < game.winCount2):
                     ctext = font.render('You Won the Game!', 1, white)
 
